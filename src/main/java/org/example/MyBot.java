@@ -12,7 +12,17 @@ public class MyBot extends TelegramLongPollingBot {
     MyBotService myBotService = new MyBotService();
     BizZoneService bizZoneService = new BizZoneService();
 
-    private static final Long ADMIN_ID = 7076305865L;
+    private static final Long ADMIN_ID;
+
+    static {
+        String adminEnv = System.getenv("ADMIN_ID");
+        Long admin = 7076305865L;
+        try {
+            if (adminEnv != null && !adminEnv.isBlank()) admin = Long.parseLong(adminEnv);
+        } catch (NumberFormatException ignored) {
+        }
+        ADMIN_ID = admin;
+    }
 
     @Override
     public void onUpdateReceived(Update update){
@@ -293,6 +303,10 @@ public class MyBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken(){
-        return "8605363522:AAHcg0pxi6Zh2LUHTF2q9X_f0FS7SBGaYMk";
+        String token = System.getenv("BOT_TOKEN");
+        if (token == null || token.isBlank()) {
+            throw new RuntimeException("BOT_TOKEN is not set. Set environment variable BOT_TOKEN with your Telegram bot token.");
+        }
+        return token;
     }
 }
